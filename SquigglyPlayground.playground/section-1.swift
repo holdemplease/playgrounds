@@ -23,19 +23,47 @@ extension Int
 }
 
 class SquigglyView : UIView {
-    var currentPoint:CGPoint?;
-    var previousPoint1:CGPoint?;
-    var previousPoint2:CGPoint?;
-    let path = UIBezierPath();
-    var maxAmplitudePixels:CGFloat?; // = 20;
-    var maxFrequency:CGFloat?; // = 30;
-    var _roundedEdgeRadius:CGFloat?;
-    var _shadowWidth:CGFloat = 0.0;
-    var _borderWidth:CGFloat = 0.0;
-    let pi = M_PI;
+
+    let _path = UIBezierPath();
+    var _maxSquiggleAmplitude:CGFloat = 0.25
+    var _squiggleFrequency:Int = 3
+    var _roundedEdgeRadius:CGFloat = 8
+    var _shadowWidth:CGFloat = 10
+    var _borderWidth:CGFloat = 10
+    var _borderColor:UIColor = UIColor(red: 2.0/255, green: 200.0/255, blue: 247.0/255, alpha: 1.0)
+    var _fillColor:UIColor = UIColor.whiteColor()
 
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder);
+    }
+
+    //     default init
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        makePathForViewBorder()
+    }
+
+    // custom init
+    init(frame: CGRect, borderColor: UIColor) {
+        super.init(frame: frame)
+
+        _borderColor = borderColor
+        makePathForViewBorder()
+    }
+
+    // custom init
+    init(frame: CGRect, maxAmplitudePixels: CGFloat, maxFrequency: Int, roundedEdgeRadius: CGFloat, borderWidth: CGFloat, shadowWidth: CGFloat, borderColor: UIColor, fillColor: UIColor) {
+        super.init(frame: frame)
+
+        _shadowWidth = shadowWidth
+        _borderWidth = borderWidth
+        _squiggleFrequency = maxFrequency
+        _maxSquiggleAmplitude = maxAmplitudePixels
+        _roundedEdgeRadius = roundedEdgeRadius
+        _borderColor = borderColor
+        _fillColor = fillColor
+
+        makePathForViewBorder()
     }
 
     func randomInt(number: CGFloat) -> Int {
@@ -46,115 +74,103 @@ class SquigglyView : UIView {
         return CGPoint(x: randomInt(rectangle.size.width), y: randomInt(rectangle.size.height))
     }
 
-    init(frame: CGRect, maxAmplitudePixels: CGFloat, maxFrequency: Int, roundedEdgeRadius: CGFloat, borderWidth: CGFloat, shadowWidth: CGFloat) {
-        super.init(frame: frame);
-        self.backgroundColor = UIColor.clearColor();
+    func makePathForViewBorder() {
+//        println("starting makePathForViewBorder")
+        var currentPoint:CGPoint?;
 
-        _shadowWidth = shadowWidth;
-        _borderWidth = borderWidth;
+        self.backgroundColor = UIColor.clearColor()
 
-        // make a subRect inset by maxAmplitudePixels from our rect
-        var squigglyRect = CGRectInset(frame, maxAmplitudePixels + _borderWidth + _shadowWidth, maxAmplitudePixels + _borderWidth + _shadowWidth);
+        // make a subRect inset by _maxSquiggleAmplitude from our rect
+        var squigglyRect = CGRectInset(frame, _maxSquiggleAmplitude + _borderWidth + _shadowWidth, _maxSquiggleAmplitude + _borderWidth + _shadowWidth);
         var segmentLength: Int
 
         // draw top left corner
-        path.addArcWithCenter(CGPointMake(squigglyRect.origin.x + roundedEdgeRadius, squigglyRect.origin.y + roundedEdgeRadius), radius: roundedEdgeRadius, startAngle: CGFloat(pi), endAngle: CGFloat((3/2.0)*pi), clockwise: true);
+        _path.addArcWithCenter(CGPointMake(squigglyRect.origin.x + _roundedEdgeRadius, squigglyRect.origin.y + _roundedEdgeRadius), radius: _roundedEdgeRadius, startAngle: CGFloat(M_PI), endAngle: CGFloat((3/2.0)*M_PI), clockwise: true);
 
         // topleft -> topright
-        segmentLength = (Int(squigglyRect.width) - Int(roundedEdgeRadius) * 2) / maxFrequency;
+        segmentLength = (Int(squigglyRect.width) - Int(_roundedEdgeRadius) * 2) / _squiggleFrequency;
 
-        for _ in 0...maxFrequency-1 {
-//            var debugView = UIView(frame: CGRectMake(path.currentPoint.x, path.currentPoint.y - CGFloat(roundedEdgeRadius), CGFloat(segmentLength), CGFloat(roundedEdgeRadius*2)));
-//            debugView.backgroundColor = UIColor.blackColor();
-//            debugView.alpha = 0.3;
-//            addSubview(debugView);
-
-            var randomX = Int.random(Int(path.currentPoint.x)...Int(path.currentPoint.x) + segmentLength);
-            var randomY = Int.random(Int(path.currentPoint.y - roundedEdgeRadius)...Int(path.currentPoint.y + roundedEdgeRadius));
+        for _ in 0..._squiggleFrequency-1 {
+            var randomX = Int.random(Int(_path.currentPoint.x)...Int(_path.currentPoint.x) + segmentLength);
+            var randomY = Int.random(Int(_path.currentPoint.y - _roundedEdgeRadius)...Int(_path.currentPoint.y + _roundedEdgeRadius));
             var randomPoint = CGPointMake(CGFloat(randomX), CGFloat(randomY));
 
-            path.addQuadCurveToPoint(CGPointMake(path.currentPoint.x + CGFloat(segmentLength), path.currentPoint.y), controlPoint: randomPoint);
+            _path.addQuadCurveToPoint(CGPointMake(_path.currentPoint.x + CGFloat(segmentLength), _path.currentPoint.y), controlPoint: randomPoint);
         }
 
         // top-right corner
-        path.addArcWithCenter(CGPointMake(squigglyRect.origin.x + squigglyRect.size.width - roundedEdgeRadius, squigglyRect.origin.y + roundedEdgeRadius), radius: roundedEdgeRadius, startAngle: CGFloat((3/2.0)*pi), endAngle: 0, clockwise: true);
+        _path.addArcWithCenter(CGPointMake(squigglyRect.origin.x + squigglyRect.size.width - _roundedEdgeRadius, squigglyRect.origin.y + _roundedEdgeRadius), radius: _roundedEdgeRadius, startAngle: CGFloat((3/2.0)*M_PI), endAngle: 0, clockwise: true);
 
         // topright -> bottomright
-        segmentLength = (Int(squigglyRect.height) - Int(roundedEdgeRadius) * 2) / maxFrequency;
+        segmentLength = (Int(squigglyRect.height) - Int(_roundedEdgeRadius) * 2) / _squiggleFrequency;
 
-        for _ in 0...maxFrequency-1 {
-//            var debugView = UIView(frame: CGRectMake(path.currentPoint.x - CGFloat(roundedEdgeRadius), path.currentPoint.y, CGFloat(roundedEdgeRadius*2), CGFloat(segmentLength)));
-//            debugView.backgroundColor = UIColor.blackColor();
-//            debugView.alpha = 0.3;
-//            addSubview(debugView);
-
-            var randomX = Int.random(Int(path.currentPoint.x - CGFloat(roundedEdgeRadius))...Int(path.currentPoint.x + CGFloat(roundedEdgeRadius)));
-            var randomY = Int.random(Int(path.currentPoint.y)...Int(path.currentPoint.y) + segmentLength);
+        for _ in 0..._squiggleFrequency-1 {
+            var randomX = Int.random(Int(_path.currentPoint.x - CGFloat(_roundedEdgeRadius))...Int(_path.currentPoint.x + CGFloat(_roundedEdgeRadius)));
+            var randomY = Int.random(Int(_path.currentPoint.y)...Int(_path.currentPoint.y) + segmentLength);
             var randomPoint = CGPointMake(CGFloat(randomX), CGFloat(randomY));
 
-            path.addQuadCurveToPoint(CGPointMake(path.currentPoint.x, path.currentPoint.y + CGFloat(segmentLength)), controlPoint: randomPoint);
+            _path.addQuadCurveToPoint(CGPointMake(_path.currentPoint.x, _path.currentPoint.y + CGFloat(segmentLength)), controlPoint: randomPoint);
         }
 
         // bottom-right corner
-        path.addArcWithCenter(CGPointMake(squigglyRect.origin.x + squigglyRect.size.width - roundedEdgeRadius, squigglyRect.origin.y + squigglyRect.height - roundedEdgeRadius), radius: roundedEdgeRadius, startAngle: 0, endAngle: CGFloat(0.5*pi), clockwise: true);
+        _path.addArcWithCenter(CGPointMake(squigglyRect.origin.x + squigglyRect.size.width - _roundedEdgeRadius, squigglyRect.origin.y + squigglyRect.height - _roundedEdgeRadius), radius: _roundedEdgeRadius, startAngle: 0, endAngle: CGFloat(0.5*M_PI), clockwise: true);
 
         // bottomright -> bottomleft
-        segmentLength = (Int(squigglyRect.width) - Int(roundedEdgeRadius) * 2) / maxFrequency;
+        segmentLength = (Int(squigglyRect.width) - Int(_roundedEdgeRadius) * 2) / _squiggleFrequency;
 
-        for _ in 0...maxFrequency-1 {
-//            var debugView = UIView(frame: CGRectMake(path.currentPoint.x - CGFloat(segmentLength), path.currentPoint.y - CGFloat(roundedEdgeRadius), CGFloat(segmentLength), CGFloat(roundedEdgeRadius*2)));
-//            debugView.backgroundColor = UIColor.blackColor();
-//            debugView.alpha = 0.3;
-//            addSubview(debugView);
-
-            var randomX = Int.random(Int(path.currentPoint.x - CGFloat(segmentLength))...Int(path.currentPoint.x));
-            var randomY = Int.random(Int(path.currentPoint.y - roundedEdgeRadius)...Int(path.currentPoint.y + roundedEdgeRadius));
+        for _ in 0..._squiggleFrequency-1 {
+            var randomX = Int.random(Int(_path.currentPoint.x - CGFloat(segmentLength))...Int(_path.currentPoint.x));
+            var randomY = Int.random(Int(_path.currentPoint.y - _roundedEdgeRadius)...Int(_path.currentPoint.y + _roundedEdgeRadius));
             var randomPoint = CGPointMake(CGFloat(randomX), CGFloat(randomY));
 
-            path.addQuadCurveToPoint(CGPointMake(path.currentPoint.x - CGFloat(segmentLength), path.currentPoint.y), controlPoint: randomPoint);
+            _path.addQuadCurveToPoint(CGPointMake(_path.currentPoint.x - CGFloat(segmentLength), _path.currentPoint.y), controlPoint: randomPoint);
         }
 
         // bottom-left corner
-        path.addArcWithCenter(CGPointMake(squigglyRect.origin.x + roundedEdgeRadius, squigglyRect.origin.y + squigglyRect.height - roundedEdgeRadius), radius: roundedEdgeRadius, startAngle: CGFloat(0.5*pi), endAngle: CGFloat(pi), clockwise: true);
+        _path.addArcWithCenter(CGPointMake(squigglyRect.origin.x + _roundedEdgeRadius, squigglyRect.origin.y + squigglyRect.height - _roundedEdgeRadius), radius: _roundedEdgeRadius, startAngle: CGFloat(0.5*M_PI), endAngle: CGFloat(M_PI), clockwise: true);
 
         // bottomleft -> topleft
-        segmentLength = (Int(squigglyRect.height) - Int(roundedEdgeRadius) * 2) / maxFrequency;
+        segmentLength = (Int(squigglyRect.height) - Int(_roundedEdgeRadius) * 2) / _squiggleFrequency;
 
-        for _ in 0...maxFrequency-1 {
-//            var debugView = UIView(frame: CGRectMake(path.currentPoint.x - CGFloat(roundedEdgeRadius), path.currentPoint.y - CGFloat(segmentLength), CGFloat(roundedEdgeRadius*2), CGFloat(segmentLength)));
-//            debugView.backgroundColor = UIColor.blackColor();
-//            debugView.alpha = 0.3;
-//            addSubview(debugView);
-
-            var randomX = Int.random(Int(path.currentPoint.x - CGFloat(roundedEdgeRadius))...Int(path.currentPoint.x + CGFloat(roundedEdgeRadius)));
-            var randomY = Int.random(Int(path.currentPoint.y - CGFloat(segmentLength))...Int(path.currentPoint.y));
+        for _ in 0..._squiggleFrequency-1 {
+            var randomX = Int.random(Int(_path.currentPoint.x - CGFloat(_roundedEdgeRadius))...Int(_path.currentPoint.x + CGFloat(_roundedEdgeRadius)));
+            var randomY = Int.random(Int(_path.currentPoint.y - CGFloat(segmentLength))...Int(_path.currentPoint.y));
             var randomPoint = CGPointMake(CGFloat(randomX), CGFloat(randomY));
 
-            path.addQuadCurveToPoint(CGPointMake(path.currentPoint.x, path.currentPoint.y - CGFloat(segmentLength)), controlPoint: randomPoint);
+            _path.addQuadCurveToPoint(CGPointMake(_path.currentPoint.x, _path.currentPoint.y - CGFloat(segmentLength)), controlPoint: randomPoint);
         }
+        _path.closePath();
+//        println("finishing makePathForViewBorder")
 
-        path.closePath();
+        // gay hack since drawRect gets called before this method finishes execution
+        // TO DO: fix it so the init function finishes execution before drawRect gets called and you don't need to do this hack
+        self.setNeedsDisplay()
     }
 
     override func drawRect(rect: CGRect) {
-        let gc = UIGraphicsGetCurrentContext();
+        let gc = UIGraphicsGetCurrentContext()
 
-        CGContextAddPath(gc, path.CGPath);
-
-        CGContextSetFillColorWithColor(gc, UIColor.whiteColor().CGColor)
-
-        let borderColor = UIColor(red: 2.0/255, green: 200.0/255, blue: 247.0/255, alpha: 1.0)
+        // Draw border path, shadow, and fill the view
+        CGContextAddPath(gc, _path.CGPath);
+        CGContextSetFillColorWithColor(gc, _fillColor.CGColor)
         CGContextSetLineWidth(gc, _borderWidth)
-        CGContextSetStrokeColorWithColor(gc, borderColor.CGColor);
-
+        CGContextSetStrokeColorWithColor(gc, _borderColor.CGColor)
         CGContextSetShadowWithColor(gc, CGSizeMake(_shadowWidth/2.0, _shadowWidth/2.0), _shadowWidth, UIColor.grayColor().CGColor);
-
         CGContextDrawPath(gc, kCGPathFillStroke);
-        CGContextDrawPath(gc, kCGPathFill);
+
+        // Second needed rendering for filling over the inner shadow
+        CGContextAddPath(gc, _path.CGPath);
+        CGContextSetFillColorWithColor(gc, _fillColor.CGColor)
+        CGContextSetLineWidth(gc, _borderWidth)
+        CGContextSetStrokeColorWithColor(gc, _borderColor.CGColor);
+        CGContextSetShadowWithColor(gc, CGSizeMake(0, 0), 0, UIColor.grayColor().CGColor);
+        CGContextDrawPath(gc, kCGPathFillStroke);
+
         UIGraphicsEndImageContext();
     }
 }
-//
-let view = SquigglyView(frame: CGRectMake(0, 0, 300, 400), maxAmplitudePixels: 0.25, maxFrequency: 3, roundedEdgeRadius: 8, borderWidth: 10, shadowWidth: 10);
+
+//let view = SquigglyView(frame: CGRectMake(0, 0, 300, 400), borderColor: UIColor.brownColor()) //SquigglyView(frame: CGRectMake(0, 0, 300, 400), maxAmplitudePixels: 0.25, maxFrequency: 3, roundedEdgeRadius: 8, borderWidth: 10, shadowWidth: 10)
+let view = SquigglyView(frame: CGRectMake(0, 0, 300, 400)) //SquigglyView(frame: CGRectMake(0, 0, 300, 400), maxAmplitudePixels: 0.25, maxFrequency: 3, roundedEdgeRadius: 8, borderWidth: 10, shadowWidth: 10, borderColor: UIColor.purpleColor(), fillColor: UIColor.grayColor())
 
 view
