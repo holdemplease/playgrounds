@@ -25,9 +25,9 @@ extension Int
 class SquigglyView : UIView {
 
     let _path = UIBezierPath();
-    var _maxSquiggleAmplitude:CGFloat = 0.25
+    var _maxSquiggleAmplitude:CGFloat = 8
     var _squiggleFrequency:Int = 3
-    var _roundedEdgeRadius:CGFloat = 8
+    var _roundedEdgeRadius:CGFloat = 24
     var _shadowWidth:CGFloat = 10
     var _borderWidth:CGFloat = 10
     var _borderColor:UIColor = UIColor(red: 2.0/255, green: 200.0/255, blue: 247.0/255, alpha: 1.0)
@@ -92,7 +92,7 @@ class SquigglyView : UIView {
 
         for _ in 0..._squiggleFrequency-1 {
             var randomX = Int.random(Int(_path.currentPoint.x)...Int(_path.currentPoint.x) + segmentLength);
-            var randomY = Int.random(Int(_path.currentPoint.y - _roundedEdgeRadius)...Int(_path.currentPoint.y + _roundedEdgeRadius));
+            var randomY = Int.random(Int(_path.currentPoint.y - _maxSquiggleAmplitude)...Int(_path.currentPoint.y + _maxSquiggleAmplitude));
             var randomPoint = CGPointMake(CGFloat(randomX), CGFloat(randomY));
 
             _path.addQuadCurveToPoint(CGPointMake(_path.currentPoint.x + CGFloat(segmentLength), _path.currentPoint.y), controlPoint: randomPoint);
@@ -105,7 +105,7 @@ class SquigglyView : UIView {
         segmentLength = (Int(squigglyRect.height) - Int(_roundedEdgeRadius) * 2) / _squiggleFrequency;
 
         for _ in 0..._squiggleFrequency-1 {
-            var randomX = Int.random(Int(_path.currentPoint.x - CGFloat(_roundedEdgeRadius))...Int(_path.currentPoint.x + CGFloat(_roundedEdgeRadius)));
+            var randomX = Int.random(Int(_path.currentPoint.x - CGFloat(_maxSquiggleAmplitude))...Int(_path.currentPoint.x + CGFloat(_maxSquiggleAmplitude)));
             var randomY = Int.random(Int(_path.currentPoint.y)...Int(_path.currentPoint.y) + segmentLength);
             var randomPoint = CGPointMake(CGFloat(randomX), CGFloat(randomY));
 
@@ -120,7 +120,7 @@ class SquigglyView : UIView {
 
         for _ in 0..._squiggleFrequency-1 {
             var randomX = Int.random(Int(_path.currentPoint.x - CGFloat(segmentLength))...Int(_path.currentPoint.x));
-            var randomY = Int.random(Int(_path.currentPoint.y - _roundedEdgeRadius)...Int(_path.currentPoint.y + _roundedEdgeRadius));
+            var randomY = Int.random(Int(_path.currentPoint.y - _maxSquiggleAmplitude)...Int(_path.currentPoint.y + _maxSquiggleAmplitude));
             var randomPoint = CGPointMake(CGFloat(randomX), CGFloat(randomY));
 
             _path.addQuadCurveToPoint(CGPointMake(_path.currentPoint.x - CGFloat(segmentLength), _path.currentPoint.y), controlPoint: randomPoint);
@@ -133,7 +133,7 @@ class SquigglyView : UIView {
         segmentLength = (Int(squigglyRect.height) - Int(_roundedEdgeRadius) * 2) / _squiggleFrequency;
 
         for _ in 0..._squiggleFrequency-1 {
-            var randomX = Int.random(Int(_path.currentPoint.x - CGFloat(_roundedEdgeRadius))...Int(_path.currentPoint.x + CGFloat(_roundedEdgeRadius)));
+            var randomX = Int.random(Int(_path.currentPoint.x - CGFloat(_maxSquiggleAmplitude))...Int(_path.currentPoint.x + CGFloat(_maxSquiggleAmplitude)));
             var randomY = Int.random(Int(_path.currentPoint.y - CGFloat(segmentLength))...Int(_path.currentPoint.y));
             var randomPoint = CGPointMake(CGFloat(randomX), CGFloat(randomY));
 
