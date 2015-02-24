@@ -84,7 +84,7 @@ class SquigglyView : UIView {
         var squigglyRect = CGRectInset(self.bounds, _maxSquiggleAmplitude + _borderWidth + _shadowWidth, _maxSquiggleAmplitude + _borderWidth + _shadowWidth)
         var squiggleCountX = Int(1 + squigglyRect.width / _pixelsPerSquiggle)
         var squiggleCountY = Int(1 + squigglyRect.height / _pixelsPerSquiggle)
-        println("squiggle count = \(squiggleCountX)")
+
         var segmentLength: Int
 
         // draw top left corner
