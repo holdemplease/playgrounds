@@ -26,12 +26,12 @@ class SquigglyView : UIView {
 
     let _path = UIBezierPath()
     var _maxSquiggleAmplitude:CGFloat = 8
-    var _squiggleFrequency:Int = 3
     var _roundedEdgeRadius:CGFloat = 24
     var _shadowWidth:CGFloat = 10
     var _borderWidth:CGFloat = 10
     var _borderColor:UIColor = UIColor(red: 2.0/255, green: 200.0/255, blue: 247.0/255, alpha: 1.0)
     var _fillColor:UIColor = UIColor.whiteColor()
+    var _pixelsPerSquiggle:CGFloat = 250
 
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -52,12 +52,12 @@ class SquigglyView : UIView {
     }
 
     // custom init
-    init(frame: CGRect, maxSquiggleAmplitude: CGFloat, squiggleFrequency: Int, roundedEdgeRadius: CGFloat, borderWidth: CGFloat, shadowWidth: CGFloat, borderColor: UIColor, fillColor: UIColor) {
+    init(frame: CGRect, maxSquiggleAmplitude: CGFloat, pixelsPerSquiggle: CGFloat, roundedEdgeRadius: CGFloat, borderWidth: CGFloat, shadowWidth: CGFloat, borderColor: UIColor, fillColor: UIColor) {
         super.init(frame: frame)
 
         _shadowWidth = shadowWidth
         _borderWidth = borderWidth
-        _squiggleFrequency = squiggleFrequency
+        _pixelsPerSquiggle = pixelsPerSquiggle
         _maxSquiggleAmplitude = maxSquiggleAmplitude
         _roundedEdgeRadius = roundedEdgeRadius
         _borderColor = borderColor
@@ -82,15 +82,19 @@ class SquigglyView : UIView {
 
         // make a subRect inset by _maxSquiggleAmplitude from our rect
         var squigglyRect = CGRectInset(self.bounds, _maxSquiggleAmplitude + _borderWidth + _shadowWidth, _maxSquiggleAmplitude + _borderWidth + _shadowWidth)
+        var squiggleCountX = Int(1 + squigglyRect.width / _pixelsPerSquiggle)
+        var squiggleCountY = Int(1 + squigglyRect.height / _pixelsPerSquiggle)
+        println("squiggle count = \(squiggleCountX)")
         var segmentLength: Int
 
         // draw top left corner
         _path.addArcWithCenter(CGPointMake(squigglyRect.origin.x + _roundedEdgeRadius, squigglyRect.origin.y + _roundedEdgeRadius), radius: _roundedEdgeRadius, startAngle: CGFloat(M_PI), endAngle: CGFloat((3/2.0)*M_PI), clockwise: true)
 
         // topleft -> topright
-        segmentLength = (Int(squigglyRect.width) - Int(_roundedEdgeRadius) * 2) / _squiggleFrequency
 
-        for _ in 0..._squiggleFrequency-1 {
+        segmentLength = (Int(squigglyRect.width) - Int(_roundedEdgeRadius) * 2) / squiggleCountX
+
+        for _ in 0...squiggleCountX-1 {
             var randomX = Int.random(Int(_path.currentPoint.x)...Int(_path.currentPoint.x) + segmentLength)
             var randomY = Int.random(Int(_path.currentPoint.y - _maxSquiggleAmplitude)...Int(_path.currentPoint.y + _maxSquiggleAmplitude))
             var randomPoint = CGPointMake(CGFloat(randomX), CGFloat(randomY))
@@ -102,9 +106,9 @@ class SquigglyView : UIView {
         _path.addArcWithCenter(CGPointMake(squigglyRect.origin.x + squigglyRect.size.width - _roundedEdgeRadius, squigglyRect.origin.y + _roundedEdgeRadius), radius: _roundedEdgeRadius, startAngle: CGFloat((3/2.0)*M_PI), endAngle: 0, clockwise: true)
 
         // topright -> bottomright
-        segmentLength = (Int(squigglyRect.height) - Int(_roundedEdgeRadius) * 2) / _squiggleFrequency
+        segmentLength = (Int(squigglyRect.height) - Int(_roundedEdgeRadius) * 2) / squiggleCountY
 
-        for _ in 0..._squiggleFrequency-1 {
+        for _ in 0...squiggleCountY-1 {
             var randomX = Int.random(Int(_path.currentPoint.x - CGFloat(_maxSquiggleAmplitude))...Int(_path.currentPoint.x + CGFloat(_maxSquiggleAmplitude)))
             var randomY = Int.random(Int(_path.currentPoint.y)...Int(_path.currentPoint.y) + segmentLength)
             var randomPoint = CGPointMake(CGFloat(randomX), CGFloat(randomY))
@@ -116,9 +120,9 @@ class SquigglyView : UIView {
         _path.addArcWithCenter(CGPointMake(squigglyRect.origin.x + squigglyRect.size.width - _roundedEdgeRadius, squigglyRect.origin.y + squigglyRect.height - _roundedEdgeRadius), radius: _roundedEdgeRadius, startAngle: 0, endAngle: CGFloat(0.5*M_PI), clockwise: true)
 
         // bottomright -> bottomleft
-        segmentLength = (Int(squigglyRect.width) - Int(_roundedEdgeRadius) * 2) / _squiggleFrequency
+        segmentLength = (Int(squigglyRect.width) - Int(_roundedEdgeRadius) * 2) / squiggleCountX
 
-        for _ in 0..._squiggleFrequency-1 {
+        for _ in 0...squiggleCountX-1 {
             var randomX = Int.random(Int(_path.currentPoint.x - CGFloat(segmentLength))...Int(_path.currentPoint.x))
             var randomY = Int.random(Int(_path.currentPoint.y - _maxSquiggleAmplitude)...Int(_path.currentPoint.y + _maxSquiggleAmplitude))
             var randomPoint = CGPointMake(CGFloat(randomX), CGFloat(randomY))
@@ -130,9 +134,9 @@ class SquigglyView : UIView {
         _path.addArcWithCenter(CGPointMake(squigglyRect.origin.x + _roundedEdgeRadius, squigglyRect.origin.y + squigglyRect.height - _roundedEdgeRadius), radius: _roundedEdgeRadius, startAngle: CGFloat(0.5*M_PI), endAngle: CGFloat(M_PI), clockwise: true)
 
         // bottomleft -> topleft
-        segmentLength = (Int(squigglyRect.height) - Int(_roundedEdgeRadius) * 2) / _squiggleFrequency
+        segmentLength = (Int(squigglyRect.height) - Int(_roundedEdgeRadius) * 2) / squiggleCountY
 
-        for _ in 0..._squiggleFrequency-1 {
+        for _ in 0...squiggleCountY-1 {
             var randomX = Int.random(Int(_path.currentPoint.x - CGFloat(_maxSquiggleAmplitude))...Int(_path.currentPoint.x + CGFloat(_maxSquiggleAmplitude)))
             var randomY = Int.random(Int(_path.currentPoint.y - CGFloat(segmentLength))...Int(_path.currentPoint.y))
             var randomPoint = CGPointMake(CGFloat(randomX), CGFloat(randomY))
@@ -172,12 +176,11 @@ class SquigglyView : UIView {
 
 //let view = SquigglyView(frame: CGRectMake(0, 0, 300, 400), borderColor: UIColor.brownColor()) //SquigglyView(frame: CGRectMake(0, 0, 300, 400), maxAmplitudePixels: 0.25, maxFrequency: 3, roundedEdgeRadius: 8, borderWidth: 10, shadowWidth: 10)
 //let view = SquigglyView(frame: CGRectMake(0, 0, 300, 400))
-let backgroundView = SquigglyView(frame: CGRectMake(0, 0, 600, 400), maxSquiggleAmplitude: 8, squiggleFrequency: 3, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 10, borderColor: UIColor(red: 2.0/255, green: 200.0/255, blue: 247.0/255, alpha: 1.0), fillColor: UIColor(red: 2.0/255, green: 200.0/255, blue: 247.0/255, alpha: 1.0))
+let backgroundView = SquigglyView(frame: CGRectMake(0, 0, 600, 400), maxSquiggleAmplitude: 8, pixelsPerSquiggle: 250, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 10, borderColor: UIColor(red: 2.0/255, green: 200.0/255, blue: 247.0/255, alpha: 1.0), fillColor: UIColor(red: 2.0/255, green: 200.0/255, blue: 247.0/255, alpha: 1.0))
 
-let profileView1 = SquigglyView(frame: CGRectMake(20, 20, 275, 360), maxSquiggleAmplitude: 8, squiggleFrequency: 2, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 10, borderColor: UIColor.whiteColor(), fillColor: UIColor.whiteColor())
+let profileView1 = SquigglyView(frame: CGRectMake(20, 20, 275, 360), maxSquiggleAmplitude: 8, pixelsPerSquiggle: 250, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 10, borderColor: UIColor.whiteColor(), fillColor: UIColor.whiteColor())
 //
-let profileView2 = SquigglyView(frame: CGRectMake(305, 20, 275, 360), maxSquiggleAmplitude: 8, squiggleFrequency: 2, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 10, borderColor: UIColor.whiteColor(), fillColor: UIColor.whiteColor())
-
+let profileView2 = SquigglyView(frame: CGRectMake(305, 20, 275, 360), maxSquiggleAmplitude: 8, pixelsPerSquiggle: 250, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 10, borderColor: UIColor.whiteColor(), fillColor: UIColor.whiteColor())
 
 backgroundView.addSubview(profileView1)
 backgroundView.addSubview(profileView2)
