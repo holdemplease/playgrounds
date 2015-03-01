@@ -176,11 +176,11 @@ class SquigglyView : UIView {
 
 //let view = SquigglyView(frame: CGRectMake(0, 0, 300, 400), borderColor: UIColor.brownColor()) //SquigglyView(frame: CGRectMake(0, 0, 300, 400), maxAmplitudePixels: 0.25, maxFrequency: 3, roundedEdgeRadius: 8, borderWidth: 10, shadowWidth: 10)
 //let view = SquigglyView(frame: CGRectMake(0, 0, 300, 400))
-let backgroundView = SquigglyView(frame: CGRectMake(0, 0, 600, 400), maxSquiggleAmplitude: 8, pixelsPerSquiggle: 250, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 10, borderColor: UIColor(red: 2.0/255, green: 200.0/255, blue: 247.0/255, alpha: 1.0), fillColor: UIColor(red: 2.0/255, green: 200.0/255, blue: 247.0/255, alpha: 1.0))
+let backgroundView = SquigglyView(frame: CGRectMake(0, 0, 600, 400), maxSquiggleAmplitude: 8, pixelsPerSquiggle: 250, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 8, borderColor: UIColor(red: 2.0/255, green: 200.0/255, blue: 247.0/255, alpha: 1.0), fillColor: UIColor(red: 2.0/255, green: 200.0/255, blue: 247.0/255, alpha: 1.0))
 
-let profileView1 = SquigglyView(frame: CGRectMake(20, 20, 275, 360), maxSquiggleAmplitude: 8, pixelsPerSquiggle: 250, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 10, borderColor: UIColor.whiteColor(), fillColor: UIColor.whiteColor())
+let profileView1 = SquigglyView(frame: CGRectMake(20, 20, 275, 360), maxSquiggleAmplitude: 8, pixelsPerSquiggle: 200, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 4, borderColor: UIColor.whiteColor(), fillColor: UIColor.whiteColor())
 //
-let profileView2 = SquigglyView(frame: CGRectMake(305, 20, 275, 360), maxSquiggleAmplitude: 8, pixelsPerSquiggle: 250, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 10, borderColor: UIColor.whiteColor(), fillColor: UIColor.whiteColor())
+let profileView2 = SquigglyView(frame: CGRectMake(305, 20, 275, 360), maxSquiggleAmplitude: 8, pixelsPerSquiggle: 250, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 4, borderColor: UIColor.whiteColor(), fillColor: UIColor.whiteColor())
 
 backgroundView.addSubview(profileView1)
 backgroundView.addSubview(profileView2)
