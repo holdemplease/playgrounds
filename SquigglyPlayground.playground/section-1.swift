@@ -180,7 +180,7 @@ let backgroundView = SquigglyView(frame: CGRectMake(0, 0, 600, 400), maxSquiggle
 
 let profileView1 = SquigglyView(frame: CGRectMake(20, 20, 275, 360), maxSquiggleAmplitude: 8, pixelsPerSquiggle: 200, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 4, borderColor: UIColor.whiteColor(), fillColor: UIColor.whiteColor())
 //
-let profileView2 = SquigglyView(frame: CGRectMake(305, 20, 275, 360), maxSquiggleAmplitude: 8, pixelsPerSquiggle: 250, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 6, borderColor: UIColor.whiteColor(), fillColor: UIColor.whiteColor())
+let profileView2 = SquigglyView(frame: CGRectMake(305, 20, 275, 360), maxSquiggleAmplitude: 8, pixelsPerSquiggle: 250, roundedEdgeRadius: 24, borderWidth: 0, shadowWidth: 4, borderColor: UIColor.whiteColor(), fillColor: UIColor.whiteColor())
 
 backgroundView.addSubview(profileView1)
 backgroundView.addSubview(profileView2)
